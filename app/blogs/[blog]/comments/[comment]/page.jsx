@@ -97,8 +97,9 @@ const blogPosts = {
 }
 
 const page = async ({ params }) => {
-    const { blog } = await params
+    const { blog, comment } = await params
     const post = blogPosts[blog]
+    const commentId = parseInt(comment)
 
     if (!post) {
         return (
@@ -118,15 +119,35 @@ const page = async ({ params }) => {
         )
     }
 
+    const commentData = post.comments.find(c => c.id === commentId)
+
+    if (!commentData) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-white via-white to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+                <div className="max-w-4xl w-full text-center space-y-8">
+                    <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-gray-100">
+                        Comment Not Found
+                    </h1>
+                    <Link
+                        href={`/blogs/${blog}/comments`}
+                        className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                    >
+                        ← Back to Comments
+                    </Link>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-white via-white to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
             <div className="max-w-4xl w-full space-y-8">
                 <div className="space-y-4">
                     <Link
-                        href={`/blogs/${blog}`}
+                        href={`/blogs/${blog}/comments`}
                         className="inline-flex items-center text-blue-500 hover:text-blue-600 transition-colors"
                     >
-                        ← Back to Blog Post
+                        ← Back to All Comments
                     </Link>
 
                     <div className="flex items-center gap-3">
@@ -139,51 +160,81 @@ const page = async ({ params }) => {
                     </div>
 
                     <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                        Comments for "{post.title}"
+                        Comment #{commentData.id}
                     </h1>
 
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-medium">By {post.author}</span>
-                        <span className="mx-2">•</span>
-                        <span>{post.comments.length} {post.comments.length === 1 ? 'comment' : 'comments'}</span>
+                        <span className="font-medium">From: {post.title}</span>
                     </div>
                 </div>
 
-                <div className="pt-8 space-y-6">
-                    {post.comments.length === 0 ? (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500 dark:text-gray-400 text-lg">No comments yet. Be the first to share your thoughts!</p>
-                        </div>
-                    ) : (
-                        post.comments.map((comment) => (
-                            <Link
-                                key={comment.id}
-                                href={`/blogs/${blog}/comments/${comment.id}`}
-                                className="block p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:scale-105 cursor-pointer"
-                            >
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold">
-                                            {comment.author.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{comment.author}</h3>
-                                            <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
-                                        </div>
-                                    </div>
-                                    <span className="text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                                        #{comment.id}
+                <div className="pt-8">
+                    <div className="p-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 space-y-6">
+                        <div className="flex items-start gap-4">
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-2xl font-semibold flex-shrink-0">
+                                {commentData.author.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                                        {commentData.author}
+                                    </h2>
+                                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                                        {commentData.date}
                                     </span>
                                 </div>
-                                <p className="text-gray-600 dark:text-gray-400 line-clamp-2">
-                                    {comment.content}
-                                </p>
-                                <div className="mt-3 text-sm text-blue-500 hover:text-blue-600">
-                                    View full comment →
+                                <div className="prose max-w-none">
+                                    <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+                                        {commentData.content}
+                                    </p>
                                 </div>
-                            </Link>
-                        ))
-                    )}
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="flex items-center gap-1">
+                                    💬 Reply to this comment
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    ❤️ Like
+                                </span>
+                                <span className="flex items-center gap-1">
+                                    🔗 Share
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-8 space-y-4">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        Other Comments on This Post
+                    </h3>
+                    <div className="space-y-4">
+                        {post.comments
+                            .filter(c => c.id !== commentData.id)
+                            .map((otherComment) => (
+                                <Link
+                                    key={otherComment.id}
+                                    href={`/blogs/${blog}/comments/${otherComment.id}`}
+                                    className="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 hover:scale-105 cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-semibold">
+                                            {otherComment.author.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{otherComment.author}</h4>
+                                            <span className="text-xs text-gray-500 dark:text-gray-400">{otherComment.date}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
+                                        {otherComment.content}
+                                    </p>
+                                </Link>
+                            ))}
+                    </div>
                 </div>
 
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-700">

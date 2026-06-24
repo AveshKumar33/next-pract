@@ -9,7 +9,21 @@ const blogPosts = [
     excerpt: 'Learn the fundamentals of Next.js and build your first modern web application with this comprehensive guide.',
     date: '2024-01-15',
     author: 'John Doe',
-    category: 'Tutorial'
+    category: 'Tutorial',
+    comments: [
+      {
+        id: 1,
+        author: 'Alice Johnson',
+        date: '2024-01-16',
+        content: 'Great introduction to Next.js! This really helped me understand the basics.'
+      },
+      {
+        id: 2,
+        author: 'Bob Smith',
+        date: '2024-01-17',
+        content: 'The explanation of SSR vs SSG was very clear. Thanks for sharing!'
+      }
+    ]
   },
   {
     id: 2,
@@ -18,7 +32,15 @@ const blogPosts = [
     excerpt: 'Explore the latest CSS features and techniques that will help you build better, more responsive designs.',
     date: '2024-01-20',
     author: 'Jane Smith',
-    category: 'CSS'
+    category: 'CSS',
+    comments: [
+      {
+        id: 1,
+        author: 'Charlie Brown',
+        date: '2024-01-21',
+        content: 'Container queries are a game changer! Thanks for covering them.'
+      }
+    ]
   },
   {
     id: 3,
@@ -27,7 +49,21 @@ const blogPosts = [
     excerpt: 'Discover the essential React patterns and practices that every developer should follow in modern applications.',
     date: '2024-02-01',
     author: 'Mike Johnson',
-    category: 'React'
+    category: 'React',
+    comments: [
+      {
+        id: 1,
+        author: 'Diana Prince',
+        date: '2024-02-02',
+        content: 'TypeScript with React is indeed a great combination. Good article!'
+      },
+      {
+        id: 2,
+        author: 'Eve Adams',
+        date: '2024-02-03',
+        content: 'Would love to see more about performance optimization techniques.'
+      }
+    ]
   },
   {
     id: 4,
@@ -36,7 +72,15 @@ const blogPosts = [
     excerpt: 'A deep dive into creating robust, scalable API architectures using Node.js and modern backend technologies.',
     date: '2024-02-10',
     author: 'Sarah Williams',
-    category: 'Backend'
+    category: 'Backend',
+    comments: [
+      {
+        id: 1,
+        author: 'Frank Miller',
+        date: '2024-02-11',
+        content: 'Excellent overview of API development with Node.js!'
+      }
+    ]
   }
 ]
 
@@ -74,8 +118,11 @@ const page = () => {
               <p className="text-gray-600 dark:text-gray-400 mb-3">
                 {post.excerpt}
               </p>
-              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                 <span className="font-medium">By {post.author}</span>
+                <span className="flex items-center gap-1">
+                  💬 {post.comments?.length || 0} {post.comments?.length === 1 ? 'comment' : 'comments'}
+                </span>
               </div>
             </Link>
           ))}

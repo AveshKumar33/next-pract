@@ -1,5 +1,7 @@
+'use client'
+
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 
 const blogPosts = {
   'getting-started-with-nextjs': {
@@ -34,7 +36,21 @@ const blogPosts = {
       
       <h2>Conclusion</h2>
       <p>Next.js provides a powerful foundation for building modern web applications. With its rich feature set and excellent developer experience, it's no wonder it's become the framework of choice for many developers.</p>
-    `
+    `,
+    comments: [
+      {
+        id: 1,
+        author: 'Alice Johnson',
+        date: '2024-01-16',
+        content: 'Great introduction to Next.js! This really helped me understand the basics.'
+      },
+      {
+        id: 2,
+        author: 'Bob Smith',
+        date: '2024-01-17',
+        content: 'The explanation of SSR vs SSG was very clear. Thanks for sharing!'
+      }
+    ]
   },
   'modern-css-techniques': {
     id: 2,
@@ -61,7 +77,27 @@ const blogPosts = {
       
       <h2>Conclusion</h2>
       <p>Modern CSS provides developers with powerful tools to create beautiful, responsive designs. By staying up-to-date with these techniques, you can build better web experiences more efficiently.</p>
-    `
+    `,
+    comments: [
+      {
+        id: 1,
+        author: 'Charlie Brown',
+        date: '2024-01-21',
+        content: 'Container queries are a game changer! Thanks for covering them.'
+      },
+      {
+        id: 2,
+        author: 'Alice Johnson',
+        date: '2024-01-22',
+        content: 'I\'ve been using container queries in my projects and they\'ve made my layouts much more flexible.'
+      },
+      {
+        id: 3,
+        author: 'Bob Wilson',
+        date: '2024-01-23',
+        content: 'The combination of container queries and CSS Grid is incredibly powerful for creating adaptive layouts.'
+      }
+    ]
   },
   'react-best-practices': {
     id: 3,
@@ -91,7 +127,21 @@ const blogPosts = {
       
       <h2>Conclusion</h2>
       <p>Following these best practices will help you build robust, maintainable React applications. Stay updated with the latest React features and community recommendations.</p>
-    `
+    `,
+    comments: [
+      {
+        id: 1,
+        author: 'Diana Prince',
+        date: '2024-02-02',
+        content: 'TypeScript with React is indeed a great combination. Good article!'
+      },
+      {
+        id: 2,
+        author: 'Eve Adams',
+        date: '2024-02-03',
+        content: 'Would love to see more about performance optimization techniques.'
+      }
+    ]
   },
   'building-scalable-apis': {
     id: 4,
@@ -121,15 +171,51 @@ const blogPosts = {
       
       <h2>Conclusion</h2>
       <p>Building scalable APIs requires careful planning and attention to detail. By following these practices, you can create APIs that are robust, maintainable, and ready for growth.</p>
-    `
+    `,
+    comments: [
+      {
+        id: 1,
+        author: 'Frank Miller',
+        date: '2024-02-11',
+        content: 'Excellent overview of API development with Node.js!'
+      }
+    ]
   }
 }
 
-const page = async ({ params }) => {
-  const { blog } = await params
-  const post = blogPosts[blog]
+const page = ({ params }) => {
+  const [comments, setComments] = useState([])
+  const [newComment, setNewComment] = useState({ author: '', content: '' })
+  const [blog, setBlog] = useState(null)
 
-  if (!post) {
+  React.useEffect(() => {
+    const fetchBlog = async () => {
+      const resolvedParams = await params
+      const blogSlug = resolvedParams.blog
+      const post = blogPosts[blogSlug]
+      setBlog(post)
+      if (post) {
+        setComments(post.comments || [])
+      }
+    }
+    fetchBlog()
+  }, [params])
+
+  const handleAddComment = (e) => {
+    e.preventDefault()
+    if (newComment.author && newComment.content) {
+      const comment = {
+        id: comments.length + 1,
+        author: newComment.author,
+        date: new Date().toISOString().split('T')[0],
+        content: newComment.content
+      }
+      setComments([...comments, comment])
+      setNewComment({ author: '', content: '' })
+    }
+  }
+
+  if (!blog) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-white via-white to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
         <div className="max-w-4xl w-full text-center space-y-8">
@@ -160,26 +246,85 @@ const page = async ({ params }) => {
 
           <div className="flex items-center gap-3">
             <span className="px-3 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
-              {post.category}
+              {blog.category}
             </span>
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              {post.date}
+              {blog.date}
             </span>
           </div>
 
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-            {post.title}
+            {blog.title}
           </h1>
 
           <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <span className="font-medium">By {post.author}</span>
+            <span className="font-medium">By {blog.author}</span>
           </div>
         </div>
 
         <div className="pt-8">
           <article className="prose max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div dangerouslySetInnerHTML={{ __html: blog.content }} />
           </article>
+        </div>
+
+        <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">
+            Comments ({comments.length})
+          </h2>
+
+          <div className="space-y-4 mb-8">
+            {comments.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400">No comments yet. Be the first to comment!</p>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{comment.author}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{comment.date}</span>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400">{comment.content}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <form onSubmit={handleAddComment} className="space-y-4">
+            <div>
+              <label htmlFor="author" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Your Name
+              </label>
+              <input
+                type="text"
+                id="author"
+                value={newComment.author}
+                onChange={(e) => setNewComment({ ...newComment, author: e.target.value })}
+                required
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter your name"
+              />
+            </div>
+            <div>
+              <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Your Comment
+              </label>
+              <textarea
+                id="content"
+                value={newComment.content}
+                onChange={(e) => setNewComment({ ...newComment, content: e.target.value })}
+                required
+                rows={4}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Share your thoughts..."
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              Add Comment
+            </button>
+          </form>
         </div>
 
         <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
