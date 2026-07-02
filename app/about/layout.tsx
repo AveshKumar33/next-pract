@@ -1,5 +1,10 @@
-import { aboutData } from './data'
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "About Us - Indigo App",
+    description: "Learn more about our company and mission",
+};
 export default function AboutLayout({
     children,
 }: {

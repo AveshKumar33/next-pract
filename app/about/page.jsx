@@ -1,4 +1,3 @@
-import React from 'react'
 import { aboutData } from './data'
 
 const page = () => {

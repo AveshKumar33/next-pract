@@ -100,7 +100,7 @@ const page = async ({ params }) => {
     const { blog, comment } = await params
     const post = blogPosts[blog]
     const commentId = parseInt(comment)
-
+    console.log(commentId);
     if (!post) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-white via-white to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">

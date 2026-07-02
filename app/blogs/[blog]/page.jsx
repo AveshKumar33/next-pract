@@ -84,18 +84,6 @@ const blogPosts = {
         author: 'Charlie Brown',
         date: '2024-01-21',
         content: 'Container queries are a game changer! Thanks for covering them.'
-      },
-      {
-        id: 2,
-        author: 'Alice Johnson',
-        date: '2024-01-22',
-        content: 'I\'ve been using container queries in my projects and they\'ve made my layouts much more flexible.'
-      },
-      {
-        id: 3,
-        author: 'Bob Wilson',
-        date: '2024-01-23',
-        content: 'The combination of container queries and CSS Grid is incredibly powerful for creating adaptive layouts.'
       }
     ]
   },
